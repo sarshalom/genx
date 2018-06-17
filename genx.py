@@ -31,6 +31,7 @@ def build_genx_model(n_users, n_items, n_words, embedding_size, word_embedding_s
     # LSTM generator
     lstm_init = keras.layers.multiply(name="user-item-mul", inputs=[user_vec, item_vec])
     lstm_init = keras.layers.Dense(lstm_size, activation='relu')(lstm_init)                    # so init size is correct
+
     lstm_generator = keras.layers.LSTM(lstm_size, return_sequences=True)(text_embedding, initial_state=[lstm_init, lstm_init])
     text_output = keras.layers.TimeDistributed(keras.layers.Dense(n_words+2, activation='softmax'))(lstm_generator)
 
