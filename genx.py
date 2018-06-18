@@ -9,7 +9,7 @@ from keras.preprocessing.sequence import pad_sequences
 from sklearn.preprocessing import LabelEncoder
 
 
-# enum for special tokens
+# enum for special tokens -- move to settings/util/config file
 class Tokens(object):
     PADDING = 0
     BEGIN = 1
@@ -26,16 +26,25 @@ def build_genx_model(n_users, n_items, n_words, embedding_size, word_embedding_s
 
     # item input
     item_input = keras.layers.Input(shape=(1,), name='item-input')
+
     item_embedding = keras.layers.Embedding(n_items, embedding_size, name='item-embedding')(item_input)
     item_vec = keras.layers.Flatten(name='item-flatten')(item_embedding)
 
+    item_bias = keras.layers.Embedding(n_items, 1, name="item_biases")(item_input)
+    item_bias = keras.layers.Flatten(name='item-bias-flatten')(item_bias)
+
     # user input
     user_input = keras.layers.Input(shape=(1,), name='user-input')
+
     user_embedding = keras.layers.Embedding(n_users, embedding_size, name='user-embedding')(user_input)
     user_vec = keras.layers.Flatten(name='user-flatten')(user_embedding)
 
+    user_bias = keras.layers.Embedding(n_items, 1, name="user_biases")(user_input)
+    user_bias = keras.layers.Flatten(name='user-bias-flatten')(user_bias)
+
     # user-item score
     score = keras.layers.dot(axes=[1, 1], name="user-item-score", inputs=[user_vec, item_vec])
+    score = keras.layers.Add(name="score-with-bias")([score, user_bias, item_bias])
 
     # text input
     text_input = keras.layers.Input(shape=(rev_length,), name='text-input')
