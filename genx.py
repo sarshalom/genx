@@ -39,7 +39,7 @@ def build_genx_model(n_users, n_items, n_words, embedding_size, word_embedding_s
     user_embedding = keras.layers.Embedding(n_users, embedding_size, name='user-embedding')(user_input)
     user_vec = keras.layers.Flatten(name='user-flatten')(user_embedding)
 
-    user_bias = keras.layers.Embedding(n_items, 1, name="user_biases")(user_input)
+    user_bias = keras.layers.Embedding(n_users, 1, name="user_biases")(user_input)
     user_bias = keras.layers.Flatten(name='user-bias-flatten')(user_bias)
 
     # user-item score
